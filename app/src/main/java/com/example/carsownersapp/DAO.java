@@ -45,7 +45,13 @@ public interface DAO {
 
 
     @Transaction
+    @Query("Delete FROM Car where ownerID = :id")
+    void deleteAllCarsForOwner(int id);
+
+
     @Delete
     void DeleteOwner(Owner o);
+
+
 
 }

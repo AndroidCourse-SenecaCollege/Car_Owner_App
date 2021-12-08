@@ -82,6 +82,33 @@ public class OwnerCarsDatabaseService {
         });
     }
 
+    public void deleteCar(Car c){
+        dbExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                dbInstance.getDAO().deleteCar(c);
+            }
+        });
+    }
+    public void getAllCars(){
+        dbExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                List<Car> list= dbInstance.getDAO().getAllcars();
+                System.out.println(list.size());
+            }
+        });
+    }
+
+    public void deleteOwnerWithCars(Owner o){
+        dbExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                dbInstance.getDAO().deleteAllCarsForOwner(o.owner_id);// 5
+                dbInstance.getDAO().DeleteOwner(o);
+            }
+        });
+    }
 
 
     public void getAllCarsForOwner(int ownerID){

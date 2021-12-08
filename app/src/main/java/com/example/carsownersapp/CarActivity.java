@@ -1,6 +1,7 @@
 package com.example.carsownersapp;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -22,7 +23,8 @@ public class CarActivity extends AppCompatActivity implements
     OwnerCarsDatabaseService dbService = new OwnerCarsDatabaseService();
 RecyclerView carlist;
 CarsAdapter adapter;
-int id;
+OwnerCars OwnersCarsObject;
+    int id;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +41,10 @@ int id;
         carlist = findViewById(R.id.carlist);
         carlist.setAdapter(adapter);
         carlist.setLayoutManager(new LinearLayoutManager(this));
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
+        itemTouchHelper.attachToRecyclerView(carlist);
+
 
         FloatingActionButton fab = findViewById(R.id.addCarFab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -73,6 +79,7 @@ int id;
 
     @Override
     public void getAllCarsForOwnerListener(OwnerCars obj) {
+        OwnersCarsObject = obj;
         adapter.carList = obj.cars;
         adapter.notifyDataSetChanged();
     }
@@ -82,4 +89,34 @@ int id;
         dbService.getAllCarsForOwner(id);
 
     }
+
+
+    // table view deleget
+    ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(
+            ItemTouchHelper.DOWN, ItemTouchHelper.LEFT |
+            ItemTouchHelper.RIGHT |
+            ItemTouchHelper.DOWN |
+            ItemTouchHelper.UP) {
+
+        @Override
+        public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+            Toast.makeText(CarActivity.this, "Item Moveing", Toast.LENGTH_SHORT).show();
+
+            return false;
+        }
+
+        @Override
+        public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+            //Remove swiped item from list and notify the RecyclerView
+            int position = viewHolder.getAdapterPosition();
+            dbService.deleteCar(OwnersCarsObject.cars.get(position));
+            dbService.getAllCarsForOwner(id);
+            adapter.carList.remove(position);
+            // we have to remove it from db as well
+
+            adapter.notifyDataSetChanged();
+
+        }
+    };
+
 }

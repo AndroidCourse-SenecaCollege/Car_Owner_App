@@ -12,7 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 public class AddNewCarFragment extends DialogFragment {
-    
+
     interface AddCarFragmentListener{
         void addNewCar(String carModel, int year);
     }
