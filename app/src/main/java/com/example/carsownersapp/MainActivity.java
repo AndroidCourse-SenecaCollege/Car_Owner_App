@@ -115,11 +115,6 @@ RecyclerView ownerList;
             int position = viewHolder.getAdapterPosition();
             dbService.deleteOwnerWithCars(adapter.ownerList.get(position));
 
-//            dbService.deleteCar(OwnersCarsObject.cars.get(position));
-//            dbService.getAllCarsForOwner(id);
-//
-
-
             adapter.ownerList.remove(position);
             // we have to remove it from db as well
 

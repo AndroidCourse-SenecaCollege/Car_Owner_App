@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 public class AddNewCarFragment extends DialogFragment {
 
@@ -18,6 +19,17 @@ public class AddNewCarFragment extends DialogFragment {
     }
 
     AddCarFragmentListener listener;
+
+
+    public static AddNewCarFragment buildFragment(String  msgFromActivity){
+        Bundle myBundle = new Bundle();
+        myBundle.putString("msg",msgFromActivity);
+
+        AddNewCarFragment fragment = new AddNewCarFragment();
+        fragment.setArguments(myBundle);
+
+        return fragment;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -32,6 +44,10 @@ public class AddNewCarFragment extends DialogFragment {
         View v = inflater.inflate(R.layout.fragment_add_new_car, container, false);
         EditText model = v.findViewById(R.id.model_text);
         EditText year = v.findViewById(R.id.year_text);
+        TextView msgText = v.findViewById(R.id.msgFromActivity);
+
+        msgText.setText(getArguments().getString("msg"));
+
 
         Button save = v.findViewById(R.id.save_id);
         save.setOnClickListener(new View.OnClickListener() {

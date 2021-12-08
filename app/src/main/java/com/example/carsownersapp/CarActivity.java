@@ -50,7 +50,10 @@ OwnerCars OwnersCarsObject;
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AddNewCarFragment fragment = new AddNewCarFragment();
+
+                AddNewCarFragment fragment = AddNewCarFragment.buildFragment("Enter New Car As A gift");
+
+               // AddNewCarFragment fragment = new AddNewCarFragment();
                fragment.show(getSupportFragmentManager().beginTransaction(),"1");
                 fragment.listener = CarActivity.this;
             }

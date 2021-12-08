@@ -7,7 +7,8 @@
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.25" />
         <entry key="app/src/main/res/layout/add_owner_fragment.xml" value="0.25" />
         <entry key="app/src/main/res/layout/car_item.xml" value="0.1609375" />
-        <entry key="app/src/main/res/layout/fragment_add_new_car.xml" value="0.12760416666666666" />
+        <entry key="app/src/main/res/layout/fragment_add_new_car.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/fragment_blank.xml" value="0.2359375" />
         <entry key="app/src/main/res/layout/owner_item.xml" value="0.1" />
       </map>
     </option>
