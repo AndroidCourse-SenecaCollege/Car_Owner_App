@@ -10,7 +10,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-public class CarsAdapter extends RecyclerView.Adapter<CarsAdapter.OwnerCarsViewHolder> {
+public class CarsAdapter extends
+        RecyclerView.Adapter<CarsAdapter.OwnerCarsViewHolder> {
 
     interface AlertDialogListner {
         void CarAdapterClickListener(Car selectedCar);

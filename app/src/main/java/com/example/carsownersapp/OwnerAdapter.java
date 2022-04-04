@@ -14,7 +14,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-public class OwnerAdapter extends RecyclerView.Adapter<OwnerAdapter.OwnerCarsViewHolder> {
+public class OwnerAdapter extends
+        RecyclerView.Adapter<OwnerAdapter.OwnerCarsViewHolder> {
 
     interface AdapterListner {
         void OwnerAdapterClickListener(Owner selectedOwner);
@@ -45,7 +46,9 @@ public class OwnerAdapter extends RecyclerView.Adapter<OwnerAdapter.OwnerCarsVie
     public int getItemCount() {
             return ownerList.size();
         }
-    class OwnerCarsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class OwnerCarsViewHolder extends
+            RecyclerView.ViewHolder implements
+            View.OnClickListener {
 
         TextView cityTextView, countryTextView;
 

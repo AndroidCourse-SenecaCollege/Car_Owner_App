@@ -20,28 +20,31 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements
         AddOwnerFragment.AddOwnerFragmentListener,
-        OwnerAdapter.AdapterListner,
-        OwnerCarsDatabaseService.DatabaseListener
+        OwnerAdapter.AdapterListner, OwnerCarDBService.DBCallBackInterface
 {
 RecyclerView ownerList;
+ArrayList<Owner> listOfOwners;
     OwnerAdapter adapter;
-    OwnerCarsDatabaseService dbService = new OwnerCarsDatabaseService();
+   OwnerCarDBService dbService;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        dbService.getDbInstance(this);
+        dbService = ((MyApp)getApplication()).dbService;
+        dbService.getInstance(this);
         dbService.listener = this;
-        dbService.getAllOwners();
-
-        dbService.getAllCars();
         ownerList = findViewById(R.id.ownerlist);
         ownerList.setLayoutManager(new LinearLayoutManager(this));
+
+        dbService.getAllOwners();
 
         adapter = new OwnerAdapter(this,new ArrayList<>(0));
         ownerList.setAdapter(adapter);
         adapter.listner = this;
+
+
+        listOfOwners = ((MyApp)getApplication()).ownerList;
+        adapter.ownerList = listOfOwners;
 
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
         itemTouchHelper.attachToRecyclerView(ownerList);
@@ -55,8 +58,6 @@ RecyclerView ownerList;
                 fragment.listener = MainActivity.this;
             }
         });
-
-
     }
 
 
@@ -73,39 +74,19 @@ RecyclerView ownerList;
 
     @Override
     public void addNewOwner(String ownerName) {
+
         dbService.insertNewOwner(ownerName);
 
-    }
 
-    @Override
-    public void getAllOwnersListener(List<Owner> list) {
-        adapter.ownerList = list;
-        adapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public void insertOwnerListener() {
-        dbService.getAllOwners();
-    }
-
-    @Override
-    public void getAllCarsForOwnerListener(OwnerCars obj) {
 
     }
 
-    @Override
-    public void insertNewCarListener() {
-
-    }
-
-
-    ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(
+    ItemTouchHelper.SimpleCallback simpleItemTouchCallback =
+            new ItemTouchHelper.SimpleCallback(
             0, ItemTouchHelper.LEFT) {
 
         @Override
         public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-            Toast.makeText(MainActivity.this, "Item Moveing", Toast.LENGTH_SHORT).show();
-
             return false;
         }
 
@@ -113,13 +94,29 @@ RecyclerView ownerList;
         public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
             //Remove swiped item from list and notify the RecyclerView
             int position = viewHolder.getAdapterPosition();
-            dbService.deleteOwnerWithCars(adapter.ownerList.get(position));
+           // listOfOwners.remove(position);
+            dbService.deleteOwnerAndCars(adapter.ownerList.get(position));
 
-            adapter.ownerList.remove(position);
-            // we have to remove it from db as well
 
-            adapter.notifyDataSetChanged();
 
         }
     };
+
+    @Override
+    public void OwnerInserted() {
+        // db service and get all owners
+        dbService.getAllOwners();
+
+    }
+    @Override
+    public void OwnerDeleted() {
+        dbService.getAllOwners();
+    }
+    @Override
+    public void listOfOwnersFormDB(List<Owner> list) {
+        adapter.ownerList = list;
+        adapter.notifyDataSetChanged();
+    }
+
+
 }

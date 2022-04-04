@@ -16,12 +16,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CarActivity extends AppCompatActivity implements
-        CarsAdapter.AlertDialogListner, AddNewCarFragment.AddCarFragmentListener,
-        OwnerCarsDatabaseService.DatabaseListener
+        CarsAdapter.AlertDialogListner, AddNewCarFragment.AddCarFragmentListener
 {
 
-    OwnerCarsDatabaseService dbService = new OwnerCarsDatabaseService();
 RecyclerView carlist;
+ArrayList<Car> carArrayList;
 CarsAdapter adapter;
 OwnerCars OwnersCarsObject;
     int id;
@@ -32,12 +31,9 @@ OwnerCars OwnersCarsObject;
         id = getIntent().getExtras().getInt("ownerid");
         String name = getIntent().getExtras().getString("ownername");
         this.setTitle(name + "'s Cars");
-
-        dbService.listener = this;
-        dbService.getDbInstance(this);
-        dbService.getAllCarsForOwner(id);
-
+        carArrayList = ((MyApp)getApplication()).getAllCarsForOneOwner(id);
         adapter = new CarsAdapter(this,new ArrayList<>(0));
+        adapter.carList = carArrayList;
         carlist = findViewById(R.id.carlist);
         carlist.setAdapter(adapter);
         carlist.setLayoutManager(new LinearLayoutManager(this));
@@ -67,31 +63,15 @@ OwnerCars OwnersCarsObject;
 
     @Override
     public void addNewCar(String carModel, int year) {
-        dbService.insertNewCar(carModel,year,id);
+       // dbService.insertNewCar(carModel,year,id);
+        carArrayList.add(new Car(year,carModel,id));
     }
 
-    @Override
-    public void getAllOwnersListener(List<Owner> list) {
 
-    }
 
-    @Override
-    public void insertOwnerListener() {
 
-    }
 
-    @Override
-    public void getAllCarsForOwnerListener(OwnerCars obj) {
-        OwnersCarsObject = obj;
-        adapter.carList = obj.cars;
-        adapter.notifyDataSetChanged();
-    }
 
-    @Override
-    public void insertNewCarListener() {
-        dbService.getAllCarsForOwner(id);
-
-    }
 
 
     // table view deleget
@@ -112,9 +92,11 @@ OwnerCars OwnersCarsObject;
         public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
             //Remove swiped item from list and notify the RecyclerView
             int position = viewHolder.getAdapterPosition();
-            dbService.deleteCar(OwnersCarsObject.cars.get(position));
-            dbService.getAllCarsForOwner(id);
-            adapter.carList.remove(position);
+            //dbService.deleteCar(OwnersCarsObject.cars.get(position));
+            //dbService.getAllCarsForOwner(id);
+            carArrayList.remove(position);
+            adapter.carList = carArrayList;
+           // adapter.carList.remove(position);
             // we have to remove it from db as well
 
             adapter.notifyDataSetChanged();
