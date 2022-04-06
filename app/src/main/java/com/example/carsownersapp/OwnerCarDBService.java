@@ -16,6 +16,10 @@ public class OwnerCarDBService {
         void OwnerInserted();
         void listOfOwnersFormDB(List<Owner> list);
         void OwnerDeleted();
+        void CarInserted();
+        void listOfCarsForSelecteOwner(List< Car> list);
+        void listOfCarsFormDB(List< Car> list);
+        void CarDeleted();
     }
 
     OwnerCarsDB db;
@@ -47,7 +51,40 @@ public class OwnerCarDBService {
        });
    }
 
-   public void getAllOwners(){
+    public void getAllCarsForOwner(int  oid){
+        dbExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                OwnerCar ownerCar = db.getDao().getAllCarsForOwner(oid);
+                dbHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        listener.listOfCarsForSelecteOwner(ownerCar.carList);
+                    }
+                });
+
+            }
+        });
+    }
+
+    public void insertNewCar(String  model, int year, int oID){
+        dbExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                db.getDao().insertNewCar(new Car(year,model,oID));
+                dbHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        listener.CarInserted();
+                    }
+                });
+
+            }
+        });
+    }
+
+
+    public void getAllOwners(){
        dbExecutor.execute(new Runnable() {
            @Override
            public void run() {
@@ -63,12 +100,31 @@ public class OwnerCarDBService {
        });
    }
 
+
+    public void getAllCars(){
+        dbExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                List<Car> list = db.getDao().getAllCar();
+                dbHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        listener.listOfCarsFormDB(list);
+                    }
+                });
+
+            }
+        });
+    }
+
 public void deleteOwnerAndCars(Owner todelete){
     dbExecutor.execute(new Runnable() {
         @Override
         public void run() {
            db.getDao().deleteAllCarsForOwner(todelete.owner_id);
            db.getDao().deleteOwner(todelete);
+
+           // db.getDao().deleteAllCarsAndOwner(todelete.owner_id);
             dbHandler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -79,5 +135,22 @@ public void deleteOwnerAndCars(Owner todelete){
         }
     });
 }
+
+
+    public void deleteCar(Car todelete){
+        dbExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                db.getDao().deleteCar(todelete);
+                dbHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        listener.CarDeleted();
+                    }
+                });
+
+            }
+        });
+    }
 
 }

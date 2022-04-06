@@ -16,12 +16,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CarActivity extends AppCompatActivity implements
-        CarsAdapter.AlertDialogListner, AddNewCarFragment.AddCarFragmentListener
+        CarsAdapter.AlertDialogListner,
+        AddNewCarFragment.AddCarFragmentListener,
+        OwnerCarDBService.DBCallBackInterface
 {
 
 RecyclerView carlist;
 ArrayList<Car> carArrayList;
 CarsAdapter adapter;
+OwnerCarDBService dbService;
 OwnerCars OwnersCarsObject;
     int id;
     @Override
@@ -31,9 +34,13 @@ OwnerCars OwnersCarsObject;
         id = getIntent().getExtras().getInt("ownerid");
         String name = getIntent().getExtras().getString("ownername");
         this.setTitle(name + "'s Cars");
-        carArrayList = ((MyApp)getApplication()).getAllCarsForOneOwner(id);
+        dbService = ((MyApp)getApplication()).dbService;
+        dbService.listener = this;
+        dbService.getAllCarsForOwner(id);
+
+        //carArrayList = ((MyApp)getApplication()).getAllCarsForOneOwner(id);
         adapter = new CarsAdapter(this,new ArrayList<>(0));
-        adapter.carList = carArrayList;
+       // adapter.carList = carArrayList;
         carlist = findViewById(R.id.carlist);
         carlist.setAdapter(adapter);
         carlist.setLayoutManager(new LinearLayoutManager(this));
@@ -49,7 +56,6 @@ OwnerCars OwnersCarsObject;
 
                 AddNewCarFragment fragment = AddNewCarFragment.buildFragment("Enter New Car As A gift");
 
-               // AddNewCarFragment fragment = new AddNewCarFragment();
                fragment.show(getSupportFragmentManager().beginTransaction(),"1");
                 fragment.listener = CarActivity.this;
             }
@@ -63,8 +69,8 @@ OwnerCars OwnersCarsObject;
 
     @Override
     public void addNewCar(String carModel, int year) {
-       // dbService.insertNewCar(carModel,year,id);
-        carArrayList.add(new Car(year,carModel,id));
+        dbService.insertNewCar(carModel,year,id);
+       // carArrayList.add(new Car(year,carModel,id));
     }
 
 
@@ -76,10 +82,7 @@ OwnerCars OwnersCarsObject;
 
     // table view deleget
     ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(
-            ItemTouchHelper.DOWN, ItemTouchHelper.LEFT |
-            ItemTouchHelper.RIGHT |
-            ItemTouchHelper.DOWN |
-            ItemTouchHelper.UP) {
+            ItemTouchHelper.DOWN, ItemTouchHelper.LEFT) {
 
         @Override
         public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
@@ -92,16 +95,49 @@ OwnerCars OwnersCarsObject;
         public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
             //Remove swiped item from list and notify the RecyclerView
             int position = viewHolder.getAdapterPosition();
-            //dbService.deleteCar(OwnersCarsObject.cars.get(position));
+            dbService.deleteCar(adapter.carList.get(position));
             //dbService.getAllCarsForOwner(id);
-            carArrayList.remove(position);
-            adapter.carList = carArrayList;
-           // adapter.carList.remove(position);
-            // we have to remove it from db as well
+            //carArrayList.remove(position);
 
-            adapter.notifyDataSetChanged();
 
         }
     };
 
+    @Override
+    public void OwnerInserted() {
+
+    }
+
+    @Override
+    public void listOfOwnersFormDB(List<Owner> list) {
+
+    }
+
+    @Override
+    public void OwnerDeleted() {
+
+    }
+
+    @Override
+    public void CarInserted() {
+        // the car inserted correctly
+        dbService.getAllCarsForOwner(id);
+    }
+
+    @Override
+    public void listOfCarsForSelecteOwner(List<Car> list) {
+        adapter.carList = list;
+        adapter.notifyDataSetChanged();
+
+    }
+
+    @Override
+    public void listOfCarsFormDB(List<Car> list) {
+
+    }
+
+    @Override
+    public void CarDeleted() {
+        dbService.getAllCarsForOwner(id);
+    }
 }

@@ -37,6 +37,7 @@ ArrayList<Owner> listOfOwners;
         ownerList.setLayoutManager(new LinearLayoutManager(this));
 
         dbService.getAllOwners();
+        dbService.getAllCars();
 
         adapter = new OwnerAdapter(this,new ArrayList<>(0));
         ownerList.setAdapter(adapter);
@@ -96,9 +97,6 @@ ArrayList<Owner> listOfOwners;
             int position = viewHolder.getAdapterPosition();
            // listOfOwners.remove(position);
             dbService.deleteOwnerAndCars(adapter.ownerList.get(position));
-
-
-
         }
     };
 
@@ -110,12 +108,42 @@ ArrayList<Owner> listOfOwners;
     }
     @Override
     public void OwnerDeleted() {
+
         dbService.getAllOwners();
+
+
     }
+
+    @Override
+    public void CarInserted() {
+
+    }
+
+    @Override
+    public void listOfCarsForSelecteOwner(List<Car> list) {
+
+    }
+
+    @Override
+    public void listOfCarsFormDB(List<Car> list) {
+        // the car list from db for all users.
+//        for (int i = 0 ;i < list.size(); i++)
+//            dbService.deleteCar(list.get(i));
+
+        Log.d("cars", list.size() + "");
+    }
+
+    @Override
+    public void CarDeleted() {
+
+    }
+
     @Override
     public void listOfOwnersFormDB(List<Owner> list) {
         adapter.ownerList = list;
         adapter.notifyDataSetChanged();
+
+        dbService.getAllCars();
     }
 
 

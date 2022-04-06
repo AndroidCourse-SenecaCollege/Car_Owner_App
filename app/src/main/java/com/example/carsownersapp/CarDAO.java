@@ -20,9 +20,6 @@ public interface CarDAO {
     @Delete
     void deleteCar(Car c);
 
-    @Delete
-    void deleteOwner(Owner o);
-
 
 
     @Query("Select * from Owner")
@@ -49,8 +46,18 @@ public interface CarDAO {
     @Query("select * from Owner where owner_id = :iD")
     OwnerCar getAllCarsForOwner(int iD);
 
+//
+//    @Transaction
+//    @Query("delete from Owner where owner_id = :id")
+//    void deleteAllCarsAndOwner(int id);
 
-    @Transaction
+
+
     @Query("delete from Car where ownerID = :id")
     void deleteAllCarsForOwner(int id);
+
+    @Delete
+    void deleteOwner(Owner o);
+
+
 }
